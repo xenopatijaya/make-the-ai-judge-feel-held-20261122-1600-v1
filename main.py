@@ -52,6 +52,10 @@ def write_entry(output_dir: str, text: str) -> str:
             f.write(text)
             f.flush()
             os.fsync(f.fileno())
+        # mkstemp creates the temp file mode 0600; chmod it world-readable
+        # BEFORE the rename so entry.txt stays readable by the grader,
+        # which checks the output as a different user.
+        os.chmod(tmp_path, 0o644)
         os.replace(tmp_path, path)
     except BaseException:
         try:
